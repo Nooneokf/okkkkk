@@ -8,9 +8,12 @@ import jwt from "jsonwebtoken";
 // Define the shape of your NextAuth session
 interface UserSession {
   user?: {
+    id: string
     name?: string | null
     email?: string | null
     image?: string | null
+    plan: 'free' | 'pro'
+    hasProCode?: boolean
   }
   // This is the crucial part: assuming the token is stored here by your JWT callback
   accessToken?: string 
@@ -20,7 +23,7 @@ export async function GET(request: Request) {
   // 1. Get the server-side session and the token from NextAuth.js
   const session: UserSession | null = await getServerSession(authOptions);
 
-    const plan = session?.user.plan || "";
+    const plan = session?.user?.plan || "free";
 
   // 2. Sign { plan } with NEXTAUTH_SECRET
   const signedToken = jwt.sign(
@@ -67,7 +70,7 @@ export async function DELETE(request: Request) {
   // 1. Get the server-side session and the token from NextAuth.js
   const session: UserSession | null = await getServerSession(authOptions);
 
-  const plan = session?.user.plan || "";
+  const plan = session?.user?.plan || "free";
 
   // 2. Sign { plan } with NEXTAUTH_SECRET
   const signedToken = jwt.sign(
